@@ -10,7 +10,7 @@ import UIKit
 
 class TodoViewController: UITableViewController {
 
-    let itemArray = ["learn Xcode", "make app", "Sell app" ]
+    var itemArray = ["learn Xcode", "make app", "Sell app" ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +39,25 @@ class TodoViewController: UITableViewController {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
         tableView.deselectRow(at: indexPath, animated: true)
+        
+    }
+    
+    
+    
+    @IBAction func addToList(_ sender: UIBarButtonItem) {
+        var addText = UITextField()
+        let alert = UIAlertController(title: "New TooDoo", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add", style: .default) { (action) in
+            self.itemArray.append(addText.text!)
+            self.tableView.reloadData()
+        }
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "this is where you type something"
+            addText = alertTextField
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
         
     }
     
