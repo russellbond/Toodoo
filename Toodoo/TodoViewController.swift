@@ -10,12 +10,14 @@ import UIKit
 
 class TodoViewController: UITableViewController {
 
-    var itemArray = ["learn Xcode", "make app", "Sell app" ]
+    var itemArray: [String] = []
+    let userStorage = UserDefaults.standard
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        itemArray = userStorage.array(forKey: "UserArray") as! [String]
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -50,6 +52,7 @@ class TodoViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             self.itemArray.append(addText.text!)
+            self.userStorage.set(self.itemArray, forKey: "UserArray")
             self.tableView.reloadData()
         }
         alert.addTextField { (alertTextField) in
