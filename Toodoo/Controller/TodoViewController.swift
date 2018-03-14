@@ -12,37 +12,21 @@ class TodoViewController: UITableViewController {
 
     var itemArray = [ListItem]()
     
-    
     //let userStorage = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-//        if let list = userStorage.array(forKey: "UserArray") as? [ListItem] {
-//            itemArray = list
-//        }
+        if let list = userStorage.array(forKey: "UserArray") as? [ListItem] {
+            itemArray = list
+        }
         
         for x in 0...20 {
             let y = ListItem()
             y.title = "\(x)"
             itemArray.append(y)
-           
         }
-        
-        
-//        let newItem = ListItem()
-//        newItem.title = "one"
-//        itemArray.append(newItem)
-//
-//        let newItem2 = ListItem()
-//        newItem2.title = "two"
-//        itemArray.append(newItem2)
-//
-//        let newItem3 = ListItem()
-//            newItem3.title = "three"
-//        itemArray.append(newItem3)
-        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -52,36 +36,24 @@ class TodoViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let index = itemArray[indexPath.row]
         
-        cell.textLabel?.text = itemArray[indexPath.row].title
+        cell.textLabel?.text = index.title
         
-        if itemArray[indexPath.row].status == true {
-            cell.accessoryType = .checkmark
-        }else {
-            cell.accessoryType = .none
-        }
+        cell.accessoryType = index.status ? .checkmark : .none
+        
         return cell
         
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(itemArray[indexPath.row])
         
-        if itemArray[indexPath.row].status == false {
-            itemArray[indexPath.row].status = true
-            
-        } else {
-            itemArray[indexPath.row].status = false
-        }
+        // this is the boolean "reverse" true/false argument... which ever it is, make it the oposite. COOL!
+        itemArray[indexPath.row].status = !itemArray[indexPath.row].status
         
         tableView.reloadData()
         
-//        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-//        } else {
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-//        }
-        tableView.deselectRow(at: indexPath, animated: true)
+        //tableView.deselectRow(at: indexPath, animated: true)
         
     }
     
@@ -95,7 +67,7 @@ class TodoViewController: UITableViewController {
             let item = ListItem()
             item.title = addText.text!
             self.itemArray.append(item)
-            //self.userStorage.set(self.itemArray, forKey: "UserArray")
+            self.userStorage.set(self.itemArray, forKey: "UserArray")
             self.tableView.reloadData()
         }
         alert.addTextField { (alertTextField) in
