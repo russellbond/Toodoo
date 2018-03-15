@@ -12,21 +12,21 @@ class TodoViewController: UITableViewController {
 
     var itemArray = [ListItem]()
     
-    //let userStorage = UserDefaults.standard
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ListData.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        if let list = userStorage.array(forKey: "UserArray") as? [ListItem] {
-            itemArray = list
-        }
+        loadData()
         
-        for x in 0...20 {
-            let y = ListItem()
-            y.title = "\(x)"
-            itemArray.append(y)
-        }
+        //print(dataFilePath)
+        
+//        for x in 0...20 {
+//            let y = ListItem()
+//            y.title = "\(x)"
+//            itemArray.append(y)
+//        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -50,10 +50,10 @@ class TodoViewController: UITableViewController {
         
         // this is the boolean "reverse" true/false argument... which ever it is, make it the oposite. COOL!
         itemArray[indexPath.row].status = !itemArray[indexPath.row].status
+        saveData()
         
-        tableView.reloadData()
         
-        //tableView.deselectRow(at: indexPath, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
         
     }
     
@@ -67,8 +67,8 @@ class TodoViewController: UITableViewController {
             let item = ListItem()
             item.title = addText.text!
             self.itemArray.append(item)
-            self.userStorage.set(self.itemArray, forKey: "UserArray")
-            self.tableView.reloadData()
+            
+            self.saveData()
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "this is where you type something"
@@ -79,5 +79,25 @@ class TodoViewController: UITableViewController {
         
     }
     
+    func saveData () {
+        let encoder = PropertyListEncoder()
+        
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print(error)
+        }
+        tableView.reloadData()
+    }
+    func loadData() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([ListItem].self, from: data)
+        }catch {
+            print(error)
+            }
+        }
+    }
 }
-
