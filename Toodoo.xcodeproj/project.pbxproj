@@ -7,16 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8E213458205972A1009ED516 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E213457205972A1009ED516 /* ListItem.swift */; };
 		8E46A1A82056D8E800661E1B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E46A1A72056D8E800661E1B /* AppDelegate.swift */; };
 		8E46A1AA2056D8E800661E1B /* TodoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E46A1A92056D8E800661E1B /* TodoViewController.swift */; };
 		8E46A1AD2056D8E800661E1B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E46A1AB2056D8E800661E1B /* Main.storyboard */; };
 		8E46A1AF2056D8E800661E1B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E46A1AE2056D8E800661E1B /* Assets.xcassets */; };
 		8E46A1B22056D8E800661E1B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E46A1B02056D8E800661E1B /* LaunchScreen.storyboard */; };
+		8E4BBB0C205AE01F006711D0 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E4BBB0A205AE01F006711D0 /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8E213457205972A1009ED516 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		8E46A1A42056D8E700661E1B /* Toodoo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Toodoo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E46A1A72056D8E800661E1B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E46A1A92056D8E800661E1B /* TodoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoViewController.swift; sourceTree = "<group>"; };
@@ -24,6 +23,7 @@
 		8E46A1AE2056D8E800661E1B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8E46A1B12056D8E800661E1B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8E46A1B32056D8E800661E1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E4BBB0B205AE01F006711D0 /* Data Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Data Model.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,7 +40,7 @@
 		8E21345920597378009ED516 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8E213457205972A1009ED516 /* ListItem.swift */,
+				8E4BBB0A205AE01F006711D0 /* DataModel.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -163,8 +163,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E213458205972A1009ED516 /* ListItem.swift in Sources */,
 				8E46A1AA2056D8E800661E1B /* TodoViewController.swift in Sources */,
+				8E4BBB0C205AE01F006711D0 /* DataModel.xcdatamodeld in Sources */,
 				8E46A1A82056D8E800661E1B /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -303,7 +303,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3H6YMNDK2B;
+				DEVELOPMENT_TEAM = 3Z2DZ8Y5LH;
 				INFOPLIST_FILE = Toodoo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SonicList.Toodoo;
@@ -318,7 +318,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3H6YMNDK2B;
+				DEVELOPMENT_TEAM = 3Z2DZ8Y5LH;
 				INFOPLIST_FILE = Toodoo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SonicList.Toodoo;
@@ -350,6 +350,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8E4BBB0A205AE01F006711D0 /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8E4BBB0B205AE01F006711D0 /* Data Model.xcdatamodel */,
+			);
+			currentVersion = 8E4BBB0B205AE01F006711D0 /* Data Model.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 8E46A19C2056D8E700661E1B /* Project object */;
 }

@@ -7,26 +7,19 @@
 //
 
 import UIKit
-
+import CoreData
 class TodoViewController: UITableViewController {
 
     var itemArray = [ListItem]()
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ListData.plist")
+
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         loadData()
-        
-        //print(dataFilePath)
-        
-//        for x in 0...20 {
-//            let y = ListItem()
-//            y.title = "\(x)"
-//            itemArray.append(y)
-//        }
+    
+    
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -50,13 +43,12 @@ class TodoViewController: UITableViewController {
         
         // this is the boolean "reverse" true/false argument... which ever it is, make it the oposite. COOL!
         itemArray[indexPath.row].status = !itemArray[indexPath.row].status
-        saveData()
         
+        saveData()
         
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
-    
     
     @IBAction func addToList(_ sender: UIBarButtonItem) {
         var addText = UITextField()
@@ -64,8 +56,9 @@ class TodoViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            let item = ListItem()
+            let item = ListItem(context: self.context)
             item.title = addText.text!
+            item.status = false
             self.itemArray.append(item)
             
             self.saveData()
@@ -80,24 +73,47 @@ class TodoViewController: UITableViewController {
     }
     
     func saveData () {
-        let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+           try context.save()
+        } catch {
+            print("Could not save because \(error)")
+        }
+        tableView.reloadData()
+    }
+    
+    func loadData(with request: NSFetchRequest<ListItem> = ListItem.fetchRequest()) {
+        //let request: NSFetchRequest<ListItem> = ListItem.fetchRequest()
+        do {
+            itemArray = try context.fetch(request)
         } catch {
             print(error)
         }
         tableView.reloadData()
     }
-    func loadData() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([ListItem].self, from: data)
-        }catch {
-            print(error)
+    
+}
+    
+//MARK: - Search Bar Delegate
+
+extension TodoViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<ListItem> = ListItem.fetchRequest()
+        
+         request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadData(with: request)
+    
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadData()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
             }
+            
         }
     }
 }
