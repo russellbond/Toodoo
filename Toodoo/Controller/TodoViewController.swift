@@ -13,6 +13,7 @@ class TodoViewController: UITableViewController {
     var itemArray = [ListItem]()
 
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    
     var selectedCatagory: Catagory? {
         didSet {
             loadData()
@@ -21,10 +22,6 @@ class TodoViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-    
-    
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -125,7 +122,6 @@ extension TodoViewController: UISearchBarDelegate {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
-            
         }
     }
 }
