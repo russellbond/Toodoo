@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
 class CatagoryViewController: UITableViewController {
 
@@ -18,9 +19,8 @@ class CatagoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
         loadCats()
+        
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -29,9 +29,10 @@ class CatagoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CatagoryCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CatagoryCell", for: indexPath) as! SwipeTableViewCell
         
         cell.textLabel?.text = catagoryArray?[indexPath.row].name ?? "No Catagories yet!"
+        cell.delegate = self
         
         return cell
         
@@ -85,5 +86,34 @@ class CatagoryViewController: UITableViewController {
             print("Could not save because \(error)")
         }
         tableView.reloadData()
+    }
+}
+
+extension CatagoryViewController: SwipeTableViewCellDelegate {
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard orientation == .right else {return nil}
+        let deleteAction = SwipeAction(style: .destructive, title: nil) {action, indexPath in
+            
+            if let item = self.catagoryArray?[indexPath.row] {
+                do {
+                    try self.realm.write {
+                        self.realm.delete(item)
+                    }
+                } catch {
+                    print(error)
+                }
+                
+            }
+        }
+        deleteAction.image = UIImage(named: "Trash")
+        return [deleteAction]
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeTableOptions {
+        var options = SwipeTableOptions()
+        options.expansionStyle = .destructive
+       
+        return options
+    
     }
 }
