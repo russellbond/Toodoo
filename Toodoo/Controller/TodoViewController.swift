@@ -7,16 +7,16 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
+
 class TodoViewController: UITableViewController {
 
-    var itemArray = [ListItem]()
-
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+    var toDoItems: Results<ListItem>?
+    let realm = try! Realm()
+   
     var selectedCatagory: Catagory? {
         didSet {
-            loadData()
+           loadData()
         }
     }
     
@@ -25,16 +25,21 @@ class TodoViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return toDoItems?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        cell.textLabel?.text = itemArray[indexPath.row].title
         
-        cell.accessoryType = itemArray[indexPath.row].status ? .checkmark : .none
+        if let item = toDoItems?[indexPath.row] {
+            cell.textLabel?.text = item.title
+            cell.accessoryType = item.status ? .checkmark : .none
+            
+        } else {
+            cell.textLabel?.text = "No Items yet!"
+        }
         
         return cell
         
@@ -42,28 +47,41 @@ class TodoViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        // this is the boolean "reverse" true/false argument... which ever it is, make it the oposite. COOL!
-        itemArray[indexPath.row].status = !itemArray[indexPath.row].status
-        
-        saveData()
-        
+        if let item = toDoItems?[indexPath.row] {
+            do {
+            try realm.write {
+                item.status = !item.status
+                }
+                } catch {
+                    print(error)
+            }
+        }
+        tableView.reloadData()
+    
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
-    
+
     @IBAction func addToList(_ sender: UIBarButtonItem) {
         var addText = UITextField()
         let alert = UIAlertController(title: "New TooDoo", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            let item = ListItem(context: self.context)
-            item.title = addText.text!
-            item.status = false
-            item.parent = self.selectedCatagory
-            self.itemArray.append(item)
+            if let currentCatagory = self.selectedCatagory {
+                do{
+                try self.realm.write {
+                    let item = ListItem()
+                    item.title = addText.text!
+                    item.date = Date()
+                    currentCatagory.items.append(item)
+                }
+                } catch {
+                    print(error)
+                }
+            }
+            self.tableView.reloadData()
             
-            self.saveData()
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "this is where you type something"
@@ -74,29 +92,18 @@ class TodoViewController: UITableViewController {
         
     }
     
-    func saveData () {
-        do {
-           try context.save()
-        } catch {
-            print("Could not save because \(error)")
-        }
-        tableView.reloadData()
-    }
+//    func saveData () {
+//        do {
+//           try context.save()
+//        } catch {
+//            print("Could not save because \(error)")
+//        }
+//        tableView.reloadData()
+//    }
     
-    func loadData(with request: NSFetchRequest<ListItem> = ListItem.fetchRequest(), predicate: NSPredicate? = nil) {
-        let categoryPredicate = NSPredicate(format: "parent.name MATCHES %@", selectedCatagory!.name!)
+    func loadData() {
+        toDoItems = selectedCatagory?.items.sorted(byKeyPath: "title", ascending: true)
         
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
-            request.predicate = categoryPredicate
-        }
-        
-        do {
-            itemArray = try context.fetch(request)
-        } catch {
-            print(error)
-        }
         tableView.reloadData()
     }
     
@@ -106,15 +113,9 @@ class TodoViewController: UITableViewController {
 
 extension TodoViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        let request: NSFetchRequest<ListItem> = ListItem.fetchRequest()
-        
-         let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        loadData(with: request, predicate: predicate)
-    
+
+        toDoItems = toDoItems?.filter("title CONTAINS [cd] %@", searchBar.text!).sorted(byKeyPath: "date", ascending: true)
+        tableView.reloadData()
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
@@ -125,3 +126,4 @@ extension TodoViewController: UISearchBarDelegate {
         }
     }
 }
+

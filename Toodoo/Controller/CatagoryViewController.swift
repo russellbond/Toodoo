@@ -7,30 +7,31 @@
 //
 
 import UIKit
-import CoreData
-
+import RealmSwift
 
 class CatagoryViewController: UITableViewController {
 
-    var catagoryArray = [Catagory]()
+    let realm = try! Realm()
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var catagoryArray: Results<Catagory>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         loadCats()
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return catagoryArray.count
+        return catagoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CatagoryCell", for: indexPath)
         
-        cell.textLabel?.text = catagoryArray[indexPath.row].name
+        cell.textLabel?.text = catagoryArray?[indexPath.row].name ?? "No Catagories yet!"
         
         return cell
         
@@ -44,9 +45,14 @@ class CatagoryViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let setItems = segue.destination as! TodoViewController
         if let index = tableView.indexPathForSelectedRow {
-        setItems.selectedCatagory = catagoryArray[index.row]
+        setItems.selectedCatagory = catagoryArray?[index.row]
         }
         
+    }
+    
+    func loadCats() {
+        catagoryArray = realm.objects(Catagory.self)
+        tableView.reloadData()
     }
     
     @IBAction func addCatagory(_ sender: UIBarButtonItem) {
@@ -55,11 +61,10 @@ class CatagoryViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
-            let item = Catagory(context: self.context)
+            let item = Catagory()
             item.name = addCat.text!
-            self.catagoryArray.append(item)
             
-            self.saveCats()
+            self.saveCats(catagoryArray: item)
         }
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "this is where you type something"
@@ -71,23 +76,14 @@ class CatagoryViewController: UITableViewController {
         
     }
     
-    func saveCats () {
+    func saveCats (catagoryArray: Catagory) {
         do {
-            try context.save()
+            try realm.write {
+                realm.add(catagoryArray)
+            }
         } catch {
             print("Could not save because \(error)")
         }
         tableView.reloadData()
     }
-    
-    func loadCats() {
-        let request: NSFetchRequest<Catagory> = Catagory.fetchRequest()
-        do {
-            catagoryArray = try context.fetch(request)
-        } catch {
-            print(error)
-        }
-        tableView.reloadData()
-    }
-    
 }
